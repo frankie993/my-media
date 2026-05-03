@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Media Persona - 社交分享版</title>
+    <title>My Media Persona - 一鍵分享版</title>
     <style>
         :root { --primary: #ff0000; --fb-blue: #1877F2; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: #1c1e21; }
         .header { background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; padding: 40px 20px; text-align: center; margin-bottom: -50px; }
+        .header h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
         .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        
+        /* 毛玻璃容器 */
         .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3); margin-bottom: 25px; }
         
         /* 播放器 */
@@ -16,20 +19,21 @@
         .video-wrapper { position: relative; padding-top: 56.25%; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* 橫向滾動 */
-        .fav-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 10px 5px; }
+        /* 橫向滾動最愛清單 */
+        .fav-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 10px 5px; scrollbar-width: thin; }
         .fav-card { min-width: 200px; max-width: 200px; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer; position: relative; }
         .fav-card img { width: 100%; height: 110px; object-fit: cover; }
-        .fav-card-info { padding: 10px; font-size: 13px; font-weight: bold; height: 40px; overflow: hidden; }
+        .fav-card-info { padding: 10px; font-size: 13px; font-weight: bold; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
-        /* 分享按鈕 */
+        /* 分享按鈕樣式 */
         .share-section { text-align: center; margin-top: 15px; }
-        .btn-share { background: #28a745; color: white; padding: 12px 30px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; width: 100%; }
+        .btn-share { background: #28a745; color: white; padding: 14px 30px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 12px rgba(40,167,69,0.3); }
+        .btn-share:hover { background: #218838; transform: translateY(-2px); }
         
         /* 搜尋樣式 */
         .search-bar { display: flex; gap: 10px; margin: 20px 0; }
-        input { flex: 1; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; outline: none; }
-        .btn-red { background: var(--primary); color: white; padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; }
+        input { flex: 1; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 16px; }
+        .btn-red { background: var(--primary); color: white; padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; }
         .search-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #eee; gap: 15px; cursor: pointer; }
         .search-item img { width: 100px; border-radius: 8px; }
     </style>
@@ -38,28 +42,31 @@
 
 <div class="header">
     <h1>🎵 My Favorite Media</h1>
-    <p>發掘朋友的靈魂影音</p>
+    <p>發掘朋友的靈魂影音，點擊「產生分享」一鍵發佈到 FB</p>
 </div>
 
 <div class="container">
     <div id="video-player-container">
-        <div class="video-wrapper"><iframe id="main-player" src="" allow="autoplay" allowfullscreen></iframe></div>
+        <div class="video-wrapper">
+            <iframe id="main-player" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
     </div>
 
     <div class="glass-card">
-        <h3 id="owner-title">❤️ 影音最愛清單</h3>
-        <div class="fav-scroll" id="fav-list"></div>
+        <h3 id="owner-title" style="margin-top:0; color:var(--primary);">❤️ 影音最愛清單</h3>
+        <div class="fav-scroll" id="fav-list">
+            </div>
         
         <div class="share-section">
-            <button class="btn-share" onclick="generateShareLink()">📤 產生我的專屬分享連結</button>
-            <p id="share-url-hint" style="font-size: 12px; color: #28a745; display: none; margin-top: 10px;">連結已複製！快去貼到 Facebook 吧！</p>
+            <button class="btn-share" onclick="generateShareLink()">🚀 產生專屬連結並分享到 Facebook</button>
+            <p style="font-size: 12px; color: #65676b; margin-top: 10px;">點擊後會彈出 FB 發文視窗，按「發佈」即可分享！</p>
         </div>
     </div>
 
     <div class="glass-card">
         <div class="search-bar">
-            <input type="text" id="query" placeholder="搜尋新影片加入清單...">
-            <button class="btn-red" onclick="searchYouTube()">搜尋</button>
+            <input type="text" id="query" placeholder="搜尋新影片加入你的清單...">
+            <button class="btn-red" onclick="searchYouTube()">搜尋影片</button>
         </div>
         <div id="results"></div>
     </div>
@@ -69,22 +76,23 @@
     const YT_API_KEY = 'AIzaSyASslL02x2kkNcCvNolXN5q-HHgIyfQqu8';
     let favorites = [];
 
-    // --- 核心邏輯：讀取網址參數 ---
+    // 初始化：讀取網址參數或本地儲存
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         const videoIds = urlParams.get('v');
         
         if (videoIds) {
             document.getElementById('owner-title').innerText = "❤️ 朋友分享給你的清單";
-            // 根據網址裡的 ID 去抓取影片資訊 (這裡簡化處理，直接顯示)
             const ids = videoIds.split(',');
             ids.forEach(id => {
-                // 這裡暫時用 ID 當標題，實務上可再呼叫 API 抓正確標題
-                favorites.push({ id: id, title: '分享影片', thumb: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` });
+                favorites.push({ 
+                    id: id, 
+                    title: '推薦影片', 
+                    thumb: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` 
+                });
             });
             displayFavorites();
         } else {
-            // 如果沒參數，就讀本地儲存
             favorites = JSON.parse(localStorage.getItem('myFavs')) || [];
             displayFavorites();
         }
@@ -92,24 +100,30 @@
 
     function searchYouTube() {
         const query = document.getElementById('query').value;
+        if(!query) return alert('請輸入關鍵字');
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&key=${YT_API_KEY}&type=video`;
+
         fetch(url).then(res => res.json()).then(data => {
             let html = '';
             data.items.forEach(item => {
                 const videoId = item.id.videoId;
+                const title = item.snippet.title;
+                const thumb = item.snippet.thumbnails.medium.url;
                 html += `
                     <div class="search-item" onclick="playVideo('${videoId}')">
-                        <img src="${item.snippet.thumbnails.medium.url}">
-                        <div style="flex:1"><strong>${item.snippet.title}</strong></div>
-                        <button class="btn-red" style="padding:5px 10px" onclick="event.stopPropagation(); addToFav('${videoId}','${item.snippet.title}','${item.snippet.thumbnails.medium.url}')">收藏</button>
+                        <img src="${thumb}">
+                        <div style="flex:1"><strong>${title}</strong></div>
+                        <button class="btn-red" style="padding:6px 12px; font-size:12px;" 
+                                onclick="event.stopPropagation(); addToFav('${videoId}','${btoa(encodeURIComponent(title))}','${thumb}')">收藏</button>
                     </div>`;
             });
             document.getElementById('results').innerHTML = html;
         });
     }
 
-    function addToFav(id, title, thumb) {
-        if (favorites.find(f => f.id === id)) return;
+    function addToFav(id, titleEncoded, thumb) {
+        const title = decodeURIComponent(atob(titleEncoded));
+        if (favorites.find(f => f.id === id)) return alert('已在清單中');
         favorites.push({ id, title, thumb });
         localStorage.setItem('myFavs', JSON.stringify(favorites));
         displayFavorites();
@@ -118,11 +132,13 @@
     function displayFavorites() {
         let html = '';
         favorites.forEach(f => {
-            html += `<div class="fav-card" onclick="playVideo('${f.id}')">
-                <img src="${f.thumb}"><div class="fav-card-info">${f.title}</div>
-            </div>`;
+            html += `
+                <div class="fav-card" onclick="playVideo('${f.id}')">
+                    <img src="${f.thumb}">
+                    <div class="fav-card-info">${f.title}</div>
+                </div>`;
         });
-        document.getElementById('fav-list').innerHTML = html || '<p>目前清單是空的</p>';
+        document.getElementById('fav-list').innerHTML = html || '<p style="color:#999; text-align:center; width:100%;">清單目前是空的，快去搜尋吧！</p>';
     }
 
     function playVideo(id) {
@@ -131,16 +147,25 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- 核心邏輯：產生分享連結 ---
+    // --- 核心改動：一鍵彈出 Facebook 分享 ---
     function generateShareLink() {
+        if (favorites.length === 0) return alert('請先收藏至少一個影片再分享喔！');
+        
         const ids = favorites.map(f => f.id).join(',');
         const shareUrl = window.location.origin + window.location.pathname + '?v=' + ids;
         
-        // 複製到剪貼簿
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            document.getElementById('share-url-hint').style.display = 'block';
-            setTimeout(() => { document.getElementById('share-url-hint').style.display = 'none'; }, 3000);
-        });
+        // 預設想在貼文裡說的話
+        const quote = "這是我最近在 My Favorite Media 收藏的影音清單，點進來看看我的品味吧！🎵";
+        
+        // Facebook Sharer 網址
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
+        
+        // 彈出小視窗
+        const w = 600, h = 500;
+        const left = (screen.width/2)-(w/2);
+        const top = (screen.height/2)-(h/2);
+        
+        window.open(fbUrl, 'FB-Share', `width=${w},height=${h},top=${top},left=${left}`);
     }
 </script>
 </body>
